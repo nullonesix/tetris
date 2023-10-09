@@ -2,6 +2,7 @@ import random
 import pygame
 import time
 import copy
+import sys
 
 pygame.init()
 
@@ -100,7 +101,6 @@ def draw_board():
                 pygame.draw.rect(surface, (0, 0, 255), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
             if not board[i][j] in [10, 11, 12, 13, 14, 15, 16, 17, 0]:
                 pygame.draw.rect(surface, (255, 255, 255), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
-                # print(board[i][j]) # debug
     pygame.display.flip()
 
 def piece_generator():
@@ -109,45 +109,22 @@ def piece_generator():
         for piece in pieces:
             yield piece
 
-generator = piece_generator()
-
-def collision(piece, x, y):
+def collision():
     for i in range(len(piece)):
         for j in range(len(piece[0])):
             if board[x+i][y+j] >= 20:
                 return True
     return False
 
-def place_piece(piece, x, y):
+def place_piece():
     for i in range(len(piece)):
         for j in range(len(piece[0])):
             board[x+i][y+j] += piece[i][j]
 
-def remove_piece(piece, x, y):
+def remove_piece():
     for i in range(len(piece)):
         for j in range(len(piece[0])):
             board[x+i][y+j] -= piece[i][j]
-
-def move_left(piece, x, y):
-    remove_piece(piece, x, y)
-    place_piece(piece, x, y-1)
-    return piece, x, y-1
-
-def move_right(piece, x, y):
-    remove_piece(piece, x, y)
-    place_piece(piece, x, y+1)
-    return piece, x, y+1
-
-def move_rotate(piece, x, y):
-    rotated_piece = list(zip(*piece[::-1]))
-    remove_piece(piece, x, y)
-    place_piece(rotated_piece, x, y)
-    return rotated_piece, x, y
-
-def gravity(piece, x, y):
-    remove_piece(piece, x, y)
-    place_piece(piece, x+1, y)
-    return piece, x+1, y
 
 def clear_line():
     for i in range(len(board)-4, -1, -1):
@@ -156,61 +133,113 @@ def clear_line():
             if board[i][j] == 0:
                 line_saturated = False
         if line_saturated:
+            print('line clear')
             for k in range(i, -1, -1):
                 for l in range(len(board[0])-4, 2, -1):
                     board[k][l] = board[k-1][l]
 
-def process_input(piece, x, y):
+def move_left():
+    global piece, x, y
+    remove_piece()
+    y -= 1
+    place_piece()
+    if collision():
+        remove_piece()
+        y += 1
+        place_piece()
+
+def move_right():
+    global piece, x, y
+    remove_piece()
+    y += 1
+    place_piece()
+    if collision():
+        remove_piece()
+        y -= 1
+        place_piece()
+
+def move_rotate():
+    global piece, x, y
+    remove_piece()
+    piece = list(zip(*piece[::-1]))
+    place_piece()
+    if collision():
+        remove_piece()
+        for _ in range(3):
+            piece = list(zip(*piece[::-1]))
+        place_piece()
+
+def move_down():
+    global piece, x, y
+    remove_piece()
+    x += 1
+    place_piece()
+    if collision():
+        remove_piece()
+        x -= 1
+        place_piece()
+
+def move_drop():
+    global piece, x, y
+    while not collision():
+        remove_piece()
+        x += 1
+        place_piece()
+    remove_piece()
+    x -= 1
+    place_piece()
+
+def process_input():
     events = pygame.event.get()
-    if events:
-        print(events)
     for event in events:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                piece, x, y = move_left(piece, x, y)
+                move_left()
             if event.key == pygame.K_RIGHT:
-                piece, x, y = move_right(piece, x, y)
+                move_right()
             if event.key == pygame.K_UP:
-                piece, x, y = move_rotate(piece, x, y)
+                move_rotate()
             if event.key == pygame.K_DOWN:
-                piece, x, y = gravity(piece, x, y)
+                move_down()
             if event.key == pygame.K_SPACE:
-                while not collision(piece, x, y):
-                    piece, x, y = gravity(piece, x, y)
-                remove_piece(piece, x, y)
-                place_piece(piece, x-1, y)
-                piece, x, y = piece, x-1, y
+                move_drop()
             if event.key == pygame.K_q:
                 pygame.quit()
-    return piece, x, y
+                sys.exit()
 
+def gravity():
+    global piece, x, y, generator, board, t0
+    if time.time() - t0 > 1:
+        t0 = time.time()
+        remove_piece()
+        x += 1
+        place_piece()
+        if collision():
+            remove_piece()
+            x -= 1
+            if x <= x_init:
+                print('game over')
+                board = copy.deepcopy(board_init)
+                generator = piece_generator()
+                piece, x, y = next(generator), x_init, y_init
+                place_piece()
+                return 
+            place_piece()
+            piece, x, y = next(generator), x_init, y_init 
+            place_piece()
+
+generator = piece_generator()
 board = copy.deepcopy(board_init)
 piece = next(generator)
-x = 0
-y = len(board[0])//2 - len(piece)//2
-place_piece(piece, x, y)
+x_init = 0
+y_init = len(board[0])//2 - len(piece)//2
+x = x_init
+y = y_init
+place_piece()
 t0 = time.time()
 
 while True:
-    piece2, x2, y2 = process_input(piece, x, y)
-    if collision(piece, x, y):
-        board = copy.deepcopy(board_init)
-        place_piece(piece, x, y)
-        piece, x, y = piece2, x2, y2
-    elif collision(piece2, x2, y2):
-        remove_piece(piece2, x2, y2) # undo the move if there's a collision
-        place_piece(piece, x, y)
-    else:
-        piece, x, y = piece2, x2, y2
+    process_input()
+    gravity()
     clear_line()
-    if time.time() - t0 > 1:
-        piece2, x2, y2 = gravity(piece, x, y)
-        if collision(piece2, x2, y2):
-            remove_piece(piece2, x2, y2) # undo gravity if there's a collision
-            place_piece(piece, x, y) # place the piece to where it was
-            piece, x, y = next(generator), 0, len(board[0])//2 - len(piece)//2 # get a new piece
-            place_piece(piece, x, y) # and place it at the top of the board
-        else:
-            piece, x, y = piece2, x2, y2
-        t0 = time.time()
     draw_board()
