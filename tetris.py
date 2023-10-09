@@ -1,70 +1,71 @@
 import random
 import pygame
 import time
+import copy
 
 pygame.init()
 
-board = [
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+board_init = [
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0],
+    [0, 0, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
 ]
 
 pieces = [
     [
-        [0, 1, 0],
-        [1, 1, 1],
+        [0, 11, 0],
+        [11, 11, 11],
         [0, 0, 0]
     ],
     [
-        [1, 1, 0],
-        [0, 1, 1],
+        [12, 12, 0],
+        [0, 12, 12],
         [0, 0, 0]
     ],
     [
-        [1, 1],
-        [1, 1]
+        [13, 13],
+        [13, 13]
     ],
     [
-        [0, 1, 1],
-        [1, 1, 0],
+        [0, 14, 14],
+        [14, 14, 0],
         [0, 0, 0]
     ],
     [
         [0, 0, 0, 0],
-        [1, 1, 1, 1],
+        [15, 15, 15, 15],
         [0, 0, 0, 0],
         [0, 0, 0, 0]
     ],
     [
-        [1, 1, 0],
-        [0, 1, 0],
-        [0, 1, 0]
+        [16, 16, 0],
+        [0, 16, 0],
+        [0, 16, 0]
     ],
     [
-        [0, 1, 1],
-        [0, 1, 0],
-        [0, 1, 0]
+        [0, 17, 17],
+        [0, 17, 0],
+        [0, 17, 0]
     ]
 ]
 
@@ -81,8 +82,25 @@ def draw_board():
     for i in range(len(board)):
         for j in range(len(board[0])):
             pygame.draw.rect(surface, (0, 0, 0), pygame.Rect(hs+s*j, vs+s*i, s, s))
-            if board[i][j] == 1:
+            if board[i][j] == 10:
+                pygame.draw.rect(surface, (155, 155, 155), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
+            if board[i][j] == 11:
+                pygame.draw.rect(surface, (255, 0, 255), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
+            if board[i][j] == 12:
+                pygame.draw.rect(surface, (255, 0, 0), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
+            if board[i][j] == 13:
+                pygame.draw.rect(surface, (255, 255, 0), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
+            if board[i][j] == 14:
+                pygame.draw.rect(surface, (0, 255, 0), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
+            if board[i][j] == 15:
+                pygame.draw.rect(surface, (0, 155, 255), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
+            if board[i][j] == 16:
+                pygame.draw.rect(surface, (255, 155, 0), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
+            if board[i][j] == 17:
+                pygame.draw.rect(surface, (0, 0, 255), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
+            if not board[i][j] in [10, 11, 12, 13, 14, 15, 16, 17, 0]:
                 pygame.draw.rect(surface, (255, 255, 255), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
+                # print(board[i][j]) # debug
     pygame.display.flip()
 
 def piece_generator():
@@ -96,7 +114,7 @@ generator = piece_generator()
 def collision(piece, x, y):
     for i in range(len(piece)):
         for j in range(len(piece[0])):
-            if board[x+i][y+j] > 1:
+            if board[x+i][y+j] >= 20:
                 return True
     return False
 
@@ -144,6 +162,8 @@ def clear_line():
 
 def process_input(piece, x, y):
     events = pygame.event.get()
+    if events:
+        print(events)
     for event in events:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
@@ -164,6 +184,7 @@ def process_input(piece, x, y):
                 pygame.quit()
     return piece, x, y
 
+board = copy.deepcopy(board_init)
 piece = next(generator)
 x = 0
 y = len(board[0])//2 - len(piece)//2
@@ -172,7 +193,11 @@ t0 = time.time()
 
 while True:
     piece2, x2, y2 = process_input(piece, x, y)
-    if collision(piece2, x2, y2):
+    if collision(piece, x, y):
+        board = copy.deepcopy(board_init)
+        place_piece(piece, x, y)
+        piece, x, y = piece2, x2, y2
+    elif collision(piece2, x2, y2):
         remove_piece(piece2, x2, y2) # undo the move if there's a collision
         place_piece(piece, x, y)
     else:
