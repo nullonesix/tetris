@@ -83,6 +83,9 @@ def draw_board():
     for i in range(len(board)):
         for j in range(len(board[0])):
             pygame.draw.rect(surface, (0, 0, 0), pygame.Rect(hs+s*j, vs+s*i, s, s))
+            # pygame.draw.rect(surface, (50, 50, 50), pygame.Rect(hs+s*j, vs+s*i, s, s))
+            if board[i][j] == 0 and i < 20 and j > 2 and j < 13:
+                pygame.draw.rect(surface, (50, 50, 50), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
             if board[i][j] == 10:
                 pygame.draw.rect(surface, (155, 155, 155), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
             if board[i][j] == 11:
