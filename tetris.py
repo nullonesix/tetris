@@ -100,8 +100,7 @@ def draw_board():
             if board[i][j] == 17:
                 pygame.draw.rect(surface, (0, 0, 255), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
             if not board[i][j] in [10, 11, 12, 13, 14, 15, 16, 17, 0]:
-                # pygame.draw.rect(surface, (255, 255, 255), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
-                pygame.draw.rect(surface, (235, 235, 235), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
+                pygame.draw.rect(surface, (255, 255, 255), pygame.Rect(hs+s*j, vs+s*i, s-g, s-g))
     pygame.display.flip()
 
 def piece_generator():
